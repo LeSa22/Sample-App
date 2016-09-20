@@ -28,4 +28,16 @@ def User.digest(string)
   def forget 
     update_attribute(:remember_digest,nil)
   end
+  class << self
+    def digest(string)#self.digest(string)
+      cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
+                                                    BCrypt::Engine.cost
+      BCrypt::Password.create(string, cost: cost)
+    end
+
+    # Returns a random token.
+    def  new_token #self.new_token
+      SecureRandom.urlsafe_base64
+    end
+  end
 end
