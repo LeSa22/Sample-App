@@ -1,5 +1,6 @@
 class User < ActiveRecord::Base
 	#downcase converting “Foo@ExAMPle.CoM” to “foo@example.com” before saving it to the database
+  has_many :microposts, dependent: :destroy
   attr_accessor :remember_token, :activation_token, :reset_token
   before_save   :downcase_email
   before_create :create_activation_digest
@@ -15,6 +16,9 @@ def User.digest(string)
     cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
                                                   BCrypt::Engine.cost
     BCrypt::Password.create(string, cost: cost)
+  end
+  def feed
+    Micropost.where("user_id = ?", id)
   end
   def User.new_token
   	SecureRandom.urlsafe_base64
